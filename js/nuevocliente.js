@@ -1,28 +1,15 @@
 (function () {
-    let DB;
-    const form = document.querySelector('#formulario');
+    // let DB;
+    
+    const formulario = document.querySelector('#formulario');
 
     document.addEventListener('DOMContentLoaded', () => {
-        
+                    
         connectionDB();
 
-        form.addEventListener('submit', validateForm);
+        formulario.addEventListener('submit', validateForm);
 
     });
-
-    function connectionDB() {
-
-        const openConnection = window.indexedDB.open('crm', 1);
-
-        openConnection.onerror = function() {
-            console.log('Error on connection');
-        }
-
-        openConnection.onsuccess = function() {
-            DB = openConnection.result;
-        }
-        
-    }
 
     function validateForm(e) {
         e.preventDefault();
@@ -51,33 +38,6 @@
 
     }
 
-    function showAlert(msg, type) {
-        
-        const alert = document.querySelector('.alert');
-
-        if (!alert) {
-
-            const divMsg = document.createElement('div');
-            divMsg.classList.add('px-4', 'py-3', 'rounded', 'max-w-lg', 'mx-auto', 'mt-6', 'text-center', 'border', 'alert');
-
-            if (type === 'error') {
-                divMsg.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
-            } else {
-                divMsg.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
-            }
-
-            divMsg.textContent = msg;
-
-            form.appendChild(divMsg);
-
-            setTimeout(() => {
-                divMsg.remove();
-            }, 3000);
-
-        }
-
-    }
-
     function createNewClient(client) {
         
         const transaction = DB.transaction(['crm'], 'readwrite');
@@ -86,14 +46,15 @@
 
         objectStore.add(client);
 
-        transaction.onerror = function() {
-            showAlert('Insert error', 'error');
+        
+        transaction.onerror = function(e) {
+            showAlert(`Insert error: ${e.target.error.message}`, 'error');
         }
 
         transaction.oncomplete = function() {
             showAlert('Added successfully');
-            form.reset();
-            
+            formulario.reset();
+
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 3000);

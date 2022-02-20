@@ -31,7 +31,7 @@
             objectStore.createIndex('name', 'name', { unique: false });
             objectStore.createIndex('email', 'email', { unique: true });
             objectStore.createIndex('phone', 'phone', { unique: false });
-            objectStore.createIndex('company', 'company', { unique: true });
+            objectStore.createIndex('company', 'company', { unique: false });
             objectStore.createIndex('id', 'id', { unique: true });
 
             console.log('DB created');
@@ -87,9 +87,6 @@
     
             }
         }
-
-
-
 
     }
 
