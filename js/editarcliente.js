@@ -1,6 +1,7 @@
 (function () {
 
-    let DB;
+    // let DB;
+    let idClient;
     const nameInput = document.querySelector('#nombre');
     const emailInput = document.querySelector('#email');
     const phoneInput = document.querySelector('#telefono');
@@ -15,7 +16,7 @@
         formulario.addEventListener('submit', updateClient);
 
         const paramsURL = new URLSearchParams(window.location.search);
-        const idClient = paramsURL.get('id');
+        idClient = paramsURL.get('id');
 
         if (idClient) {
             setTimeout(() => {
@@ -46,19 +47,6 @@
         }
     }
 
-    function connectionDB() {
-
-        const connection = window.indexedDB.open('crm', 1);
-
-        connection.onerror = function () {
-            console.log('Error connection');
-        }
-
-        connection.onsuccess = function() {         
-            DB = connection.result;
-        }
-    }
-
     function fillForm(client) {
         const { name, email, phone, company } = client;
 
@@ -72,9 +60,35 @@
         e.preventDefault();
 
         if (nameInput.value === '' || emailInput.value === '' || phoneInput.value === '' || companyInput.value === '') {
-            console.log('Error');
+            showAlert('Empty fields error', 'error');
 
             return;
+        }
+
+        //Update client
+        const updatedClient = {
+            name: nameInput.value,
+            email: emailInput.value,
+            phone: phoneInput.value,
+            company: companyInput.value,
+            id: Number(idClient)
+        }
+
+        const transaction = DB.transaction(['crm'], 'readwrite');
+        const objectStore = transaction.objectStore('crm');
+
+        objectStore.put(updatedClient);
+
+        transaction.oncomplete = function () {
+            showAlert('Successfully upgraded');
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+
+        transaction.onerror = function () {
+            showAlert('Update error', 'error');
         }
     }
 
